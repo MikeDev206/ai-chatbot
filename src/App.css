@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .App-logo {
@@ -15,13 +18,25 @@
 
 .App-header {
   background-color: #282c34;
-  min-height: 100vh;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
   color: white;
+}
+
+.App-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.App-main {
+  flex: 1;
+  padding: 1rem;
+  background-color: #f0f2f5;
+  display: flex;
+  flex-direction: column;
 }
 
 .App-link {

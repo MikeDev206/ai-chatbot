@@ -1,46 +1,198 @@
-# Getting Started with Create React App
+# React Floating Chat Widget
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, customizable floating chat widget built with React and TypeScript. This widget provides a seamless chat experience with session management and automatic timeout features.
 
-## Available Scripts
+![Chat Widget Demo](demo.gif)
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- 🎯 Floating chat button that can be placed anywhere on the page
+- 🔄 Smooth animations for opening/closing the chat window
+- ⏱️ Session management with 3-minute inactivity timeout
+- 💾 Conversation state preservation during active sessions
+- 📱 Responsive design that works on all devices
+- ⌨️ Real-time typing indicators
+- 🎨 Customizable themes and styles
+- ♿ Accessibility-friendly with ARIA labels
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Installation
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/ai-chatbot.git
+cd ai-chatbot
+```
 
-### `npm test`
+2. Install dependencies:
+```bash
+npm install
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+3. Create a `.env` file in the root directory with the following variables:
+```env
+# API Configuration
+REACT_APP_API_URL=http://localhost:3001
+REACT_APP_API_KEY=your_api_key_here
 
-### `npm run build`
+# Chat Widget Configuration
+REACT_APP_CHAT_TITLE="Chat with us"
+REACT_APP_INITIAL_GREETING="Hello! How can I help you today?"
+REACT_APP_INACTIVITY_TIMEOUT=180000
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+# Optional Configurations
+REACT_APP_MAX_MESSAGE_LENGTH=500
+REACT_APP_TYPING_INDICATOR_TIMEOUT=2000
+REACT_APP_ENABLE_FILE_UPLOADS=false
+REACT_APP_MAX_FILE_SIZE=5242880
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. Start the development server:
+```bash
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Usage
 
-### `npm run eject`
+### Basic Implementation
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```tsx
+import ChatWidget from './components/ChatWidget';
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+function App() {
+  return (
+    <div className="App">
+      <ChatWidget />
+    </div>
+  );
+}
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Component Structure
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+The widget consists of three main components:
 
-## Learn More
+1. `ChatWidget`: The main container component that handles the widget's state and session management
+2. `ChatInterface`: The chat interface component that handles messages and user input
+3. `API Service`: Handles communication with the backend
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Session Management
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The widget implements an intelligent session management system:
+
+- Sessions remain active for 3 minutes after the last user interaction
+- User interactions that reset the timeout include:
+  - Typing messages
+  - Sending messages
+  - Clicking anywhere in the chat interface
+  - Opening/closing the chat window
+- After 3 minutes of inactivity:
+  - The session is terminated
+  - A timeout message is displayed
+  - The chat window closes automatically
+  - The conversation state is cleared
+
+## Styling and Customization
+
+### Chat Button
+
+The floating chat button can be customized by modifying the CSS variables in `ChatWidget.css`:
+
+```css
+.chat-toggle-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #007bff; /* Primary color */
+}
+```
+
+### Chat Window
+
+The chat window's appearance can be modified through `ChatWidget.css`:
+
+```css
+.chat-popup {
+  width: 350px;
+  height: 500px;
+  border-radius: 12px;
+}
+```
+
+### Animations
+
+The widget includes smooth animations for:
+- Opening/closing the chat window
+- Displaying timeout messages
+- Hover effects on buttons
+
+Animations can be customized in the CSS files:
+```css
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+```
+
+## Backend Integration
+
+To connect the chat widget to your backend:
+
+1. Update the API endpoint in `src/services/api.ts`:
+```typescript
+const API_URL = 'YOUR_BACKEND_API_URL';
+```
+
+2. Customize the message format in the API service:
+```typescript
+export interface ChatMessage {
+  id: string;
+  text: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
+}
+```
+
+## Configuration Options
+
+You can modify the following constants in `ChatWidget.tsx`:
+
+```typescript
+// Inactivity timeout duration (in milliseconds)
+const INACTIVITY_TIMEOUT = 3 * 60 * 1000; // 3 minutes
+
+// Additional configuration options can be added here
+```
+
+## Browser Support
+
+The widget is compatible with:
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+- Mobile browsers
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- Built with React and TypeScript
+- Uses Material-UI icons for the chat button
+- Implements modern React patterns and hooks
+- Follows accessibility best practices

@@ -1,0 +1,386 @@
+.chat-widget-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+/* Backdrop for maximized state */
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 999;
+}
+
+.backdrop.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.chat-toggle-button {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(74, 144, 226, 0.2);
+  transition: transform 0.3s ease, background-color 0.3s ease;
+  z-index: 1001;
+}
+
+.chat-toggle-button:hover {
+  background-color: #357abd;
+  transform: scale(1.1);
+}
+
+.chat-toggle-button.open {
+  background-color: #f06292;
+}
+
+.chat-toggle-button.open:hover {
+  background-color: #ec407a;
+}
+
+.chat-popup {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: min(350px, calc(100vw - 40px));
+  height: min(500px, calc(100vh - 120px));
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn 0.3s ease-out;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.chat-popup.maximized {
+  width: min(80vw, 1000px);
+  height: min(80vh, 800px);
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 40px);
+  bottom: 50%;
+  right: 50%;
+  transform: translate(50%, 50%);
+  animation: maximizeAnimation 0.3s ease-out;
+  background-color: #ffffff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.chat-popup-header {
+  padding: 12px 16px;
+  background-color: #f8f9fa;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.chat-popup-header h3 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 16px;
+}
+
+.chat-header-buttons {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.header-button {
+  background: none;
+  border: none;
+  color: #7f8c8d;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+}
+
+.header-button:hover {
+  color: #34495e;
+  background-color: rgba(236, 240, 241, 0.8);
+}
+
+.maximize-button {
+  font-size: 1.2rem;
+}
+
+.close-button {
+  font-size: 1.2rem;
+}
+
+.timeout-message {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  animation: fadeIn 0.3s ease-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: calc(100vw - 40px);
+  word-wrap: break-word;
+}
+
+@media (max-width: 480px) {
+  .chat-popup {
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: calc(100% - 80px);
+    border-radius: 12px 12px 0 0;
+  }
+
+  .chat-popup.maximized {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .chat-toggle-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .timeout-message {
+    bottom: 80px;
+    right: 10px;
+    left: 10px;
+    text-align: center;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes maximizeAnimation {
+  from {
+    opacity: 0.8;
+    transform: translate(50%, 60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(50%, 50%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Small phones (portrait) */
+@media (max-width: 320px) {
+  .chat-popup {
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: calc(100% - 70px);
+    border-radius: 12px 12px 0 0;
+  }
+
+  .chat-toggle-button {
+    width: 45px;
+    height: 45px;
+  }
+
+  .header-button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .chat-popup-header {
+    padding: 8px 12px;
+  }
+
+  .chat-popup-header h3 {
+    font-size: 1rem;
+  }
+}
+
+/* Regular phones (portrait) */
+@media (min-width: 321px) and (max-width: 480px) {
+  .chat-popup {
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: calc(100% - 80px);
+    border-radius: 12px 12px 0 0;
+  }
+
+  .chat-popup.maximized {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .chat-toggle-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .timeout-message {
+    bottom: 80px;
+    right: 10px;
+    left: 10px;
+    text-align: center;
+  }
+}
+
+/* Large phones and small tablets (portrait) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .chat-popup {
+    width: min(420px, calc(100vw - 40px));
+    height: min(600px, calc(100vh - 100px));
+    bottom: 80px;
+  }
+
+  .chat-popup.maximized {
+    width: min(90vw, 600px);
+    height: 80vh;
+  }
+}
+
+/* Tablets and small laptops */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .chat-popup {
+    width: 450px;
+    height: min(650px, calc(100vh - 100px));
+  }
+
+  .chat-popup.maximized {
+    width: min(85vw, 800px);
+    height: min(85vh, 700px);
+  }
+}
+
+/* Regular laptops and desktops */
+@media (min-width: 1025px) and (max-width: 1366px) {
+  .chat-popup {
+    width: 380px;
+    height: 580px;
+  }
+
+  .chat-popup.maximized {
+    width: min(80vw, 1000px);
+    height: min(80vh, 800px);
+  }
+}
+
+/* Large screens */
+@media (min-width: 1367px) {
+  .chat-popup {
+    width: 420px;
+    height: 600px;
+  }
+
+  .chat-popup.maximized {
+    width: min(75vw, 1200px);
+    height: min(75vh, 900px);
+  }
+}
+
+/* Landscape mode for phones */
+@media (max-height: 480px) and (orientation: landscape) {
+  .chat-popup {
+    bottom: 10px;
+    right: 10px;
+    width: min(400px, calc(100vw - 80px));
+    height: calc(100vh - 20px);
+  }
+
+  .chat-popup.maximized {
+    width: 100%;
+    height: 100%;
+    bottom: 0;
+    right: 0;
+    transform: none;
+  }
+
+  .chat-toggle-button {
+    width: 45px;
+    height: 45px;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .timeout-message {
+    bottom: 65px;
+  }
+}
+
+/* High contrast/zoomed displays */
+@media (prefers-contrast: high) {
+  .chat-popup {
+    box-shadow: 0 0 0 2px #000;
+  }
+
+  .chat-toggle-button {
+    box-shadow: 0 0 0 2px #000;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .chat-popup {
+    animation: none;
+    transition: none;
+  }
+
+  .chat-toggle-button {
+    transition: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .chat-widget-container {
+    display: none;
+  }
+} 
