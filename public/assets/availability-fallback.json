@@ -1,0 +1,45 @@
+{
+    "results": [
+        {
+            "_id": "Thunderbolt Coaster",
+            "totalAvailability": 351
+        },
+        {
+            "_id": "Bumper Cars",
+            "totalAvailability": 304
+        },
+        {
+            "_id": "Pirate Ship",
+            "totalAvailability": 375
+        },
+        {
+            "_id": "Ferris Wheel",
+            "totalAvailability": 248
+        },
+        {
+            "_id": "Wild River",
+            "totalAvailability": 223
+        },
+        {
+            "_id": "Splash Mountain",
+            "totalAvailability": 212
+        },
+        {
+            "_id": "Haunted Mansion",
+            "totalAvailability": 294
+        },
+        {
+            "_id": "Space Rocket",
+            "totalAvailability": 293
+        },
+        {
+            "_id": "Sky Glider",
+            "totalAvailability": 364
+        },
+        {
+            "_id": "Jungle Cruise",
+            "totalAvailability": 337
+        }
+    ],
+    "message": null
+}

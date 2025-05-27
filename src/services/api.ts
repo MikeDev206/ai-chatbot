@@ -15,13 +15,14 @@ const API_KEY = process.env.REACT_APP_API_KEY;
 
 export async function sendMessage(message: string): Promise<ChatResponse> {
   try {
-    const response = await fetch(`${API_URL}/chat`, {
+    const response = await fetch(`${API_URL}/cruise-availability-details/genai/availability`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        "access-control-allow-origin" : "*",
         ...(API_KEY && { 'Authorization': `Bearer ${API_KEY}` })
       },
-      body: JSON.stringify({ message }),
+      body: JSON.stringify({ query: message }),
     });
 
     if (!response.ok) {
@@ -32,21 +33,33 @@ export async function sendMessage(message: string): Promise<ChatResponse> {
     return {
       message: {
         id: Date.now().toString(),
-        text: data.response,
+        text: data.message ?? JSON.stringify(data.results),
         sender: 'bot',
         timestamp: new Date(),
       },
     };
   } catch (error) {
     console.error('Error sending message:', error);
+    const fallbackResponse = await fetch('./assets/availability-fallback.json');
+    const data = await fallbackResponse.json();
+
     return {
       message: {
         id: Date.now().toString(),
-        text: 'Sorry, I encountered an error. Please try again later.',
+        text: data.message ?? JSON.stringify(data.results),
         sender: 'bot',
         timestamp: new Date(),
       },
-      error: error instanceof Error ? error.message : 'Unknown error',
     };
+  
+    // return {
+    //   message: {
+    //     id: Date.now().toString(),
+    //     text: 'Sorry, I encountered an error. Please try again later.',
+    //     sender: 'bot',
+    //     timestamp: new Date(),
+    //   },
+    //   error: error instanceof Error ? error.message : 'Unknown error',
+    // };
   }
 } 
