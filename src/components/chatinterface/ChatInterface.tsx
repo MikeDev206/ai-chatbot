@@ -4,6 +4,7 @@ import { ChatMessage } from '../../services/api';
 import PersonIcon from '@mui/icons-material/Person';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import { useMessageHandler } from '../../hooks/useMessageHandler';
+import GooeyLoader from './GooeyLoader';
 
 interface ChatInterfaceProps {
   onActivity?: () => void;
@@ -100,11 +101,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </div>
             <div className="message-bubble">
               <div className="message-content">
-                <div className="typing-indicator">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
+                <GooeyLoader />
               </div>
             </div>
           </div>

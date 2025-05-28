@@ -1,237 +1,124 @@
-# React Floating Chat Widget
+# AI Chatbot with Disney-Inspired UI
 
-A modern, customizable floating chat widget built with React and TypeScript. This widget provides a seamless chat experience with session management, automatic timeout features, and cruise availability integration.
-
-![Chat Widget Demo](demo.gif)
+A modern, responsive chatbot interface featuring Disney's magical design aesthetics and glass morphism effects.
 
 ## Features
 
-- 🎯 Floating chat button that can be placed anywhere on the page
-- 🔄 Smooth animations for opening/closing the chat window
-- ⏱️ Session management with 3-minute inactivity timeout
-- 💾 Conversation state preservation during active sessions
-- 📱 Responsive design that works on all devices
-- ⌨️ Real-time typing indicators
-- 🎨 Customizable themes and styles
-- ♿ Accessibility-friendly with ARIA labels
-- 🚢 Cruise availability integration with fallback responses
+### Visual Design
+- **Disney 70th Anniversary-Inspired Theme**
+  - Vibrant color palette with magical gradients
+  - Glass morphism effects throughout the interface
+  - Responsive design that adapts to all screen sizes
 
-## Installation
+### Chat Interface Elements
 
-1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/ai-chatbot.git
-cd ai-chatbot
-```
+#### Message Bubbles
+- **User Messages**
+  - Deep blue-purple gradient background
+  - Glass morphism effect with blur and transparency
+  - Top-right sharp corner design
+  - Subtle white border for depth
+  - Centered bubble tip alignment with avatar
 
-2. Install dependencies:
-```bash
-npm install
-```
+- **Bot Messages**
+  - Luminescent blue-green gradient
+  - Matching glass morphism effect
+  - Top-left sharp corner design
+  - Centered bubble tip alignment with avatar
+  - Enhanced readability with white text
 
-3. Create a `.env` file in the root directory with the following variables:
-```env
-# API Configuration
-REACT_APP_API_URL=http://localhost:3001
-REACT_APP_API_KEY=your_api_key_here
+#### Loading Indicator
+- Clean, minimalist design
+- Independent from message bubble styling
+- Subtle opacity and proportional sizing
+- Smooth animation
+- No background or bubble effects
 
-# Chat Widget Configuration
-REACT_APP_CHAT_TITLE="Chat with us"
-REACT_APP_INITIAL_GREETING="Hello! How can I help you today?"
-REACT_APP_INACTIVITY_TIMEOUT=180000
-REACT_APP_MAX_MESSAGE_LENGTH=1000
-```
+### Responsive Features
+- Fluid typography using rem units
+- Flexible spacing with relative units
+- Adaptive layouts for different screen sizes
+- Touch-friendly interaction areas
+- Optimized for both desktop and mobile
 
-4. Create an `assets` folder in the `public` directory and add your `availability-fallback.json` file for offline/error fallback responses.
+### Accessibility
+- High contrast mode support
+- Reduced motion preferences respected
+- Screen reader-friendly structure
+- Keyboard navigation support
 
-5. Start the development server:
-```bash
-npm start
-```
+## Technical Implementation
 
-## Usage
+### CSS Architecture
+- Custom properties for consistent theming
+- Modular component styling
+- BEM-like naming convention
+- Responsive breakpoints using em units
+- Hardware-accelerated animations
 
-### Basic Implementation
-
-```tsx
-import ChatWidget from './components/chatwidget/ChatWidget';
-
-function App() {
-  return (
-    <div className="App">
-      <ChatWidget />
-    </div>
-  );
-}
-```
-
-### Component Structure
-
-The widget consists of three main components:
-
-1. `ChatWidget`: The main container component that handles the widget's state and session management
-2. `ChatInterface`: The chat interface component that handles messages and user input
-3. `API Service`: Handles communication with the cruise availability backend
-
-## Cruise Availability Integration
-
-The widget integrates with a cruise availability API:
-
-### API Endpoint
-
-The chat widget communicates with the cruise availability endpoint:
-```typescript
-${API_URL}/cruise-availability-details/genai/availability
-```
-
-### Authentication
-
-API requests include:
-- Bearer token authentication (when API_KEY is provided)
-- CORS headers
-- JSON content type
-
-### Error Handling
-
-The widget implements a robust error handling system:
-1. Attempts to call the cruise availability API
-2. On failure, falls back to local availability data
-3. Uses a fallback JSON response from `public/assets/availability-fallback.json`
-
-### Message Format
-
-```typescript
-export interface ChatMessage {
-  id: string;
-  text: string;
-  sender: 'user' | 'bot';
-  timestamp: Date;
-}
-
-export interface ChatResponse {
-  message: ChatMessage;
-  error?: string;
-}
-```
-
-## Session Management
-
-The widget implements an intelligent session management system:
-
-- Sessions remain active for 3 minutes after the last user interaction
-- User interactions that reset the timeout include:
-  - Typing messages
-  - Sending messages
-  - Clicking anywhere in the chat interface
-  - Opening/closing the chat window
-- After 3 minutes of inactivity:
-  - The session is terminated
-  - A timeout message is displayed
-  - The chat window closes automatically
-  - The conversation state is cleared
-
-## Styling and Customization
-
-### Chat Button
-
-The floating chat button can be customized by modifying the CSS variables in `ChatWidget.css`:
-
+### Glass Morphism Effects
 ```css
-.chat-toggle-button {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background-color: #007bff; /* Primary color */
-}
+backdrop-filter: blur(4px);
+-webkit-backdrop-filter: blur(4px);
 ```
 
-### Chat Window
-
-The chat window's appearance can be modified through `ChatWidget.css`:
-
+### Color Variables
 ```css
-.chat-popup {
-  width: 350px;
-  height: 500px;
-  border-radius: 12px;
+:root {
+  --disney-bright-blue: #4680E3;
+  --disney-light-blue: #70A1FF;
+  --disney-deep-blue: #1e3a8a;
+  --glass-border: rgba(255, 255, 255, 0.15);
+  --glass-shine: rgba(255, 255, 255, 0.4);
 }
 ```
 
-### Animations
-
-The widget includes smooth animations for:
-- Opening/closing the chat window
-- Displaying timeout messages
-- Hover effects on buttons
-
-Animations can be customized in the CSS files:
+### Responsive Units
 ```css
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+:root {
+  --base-unit: 1rem;
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --border-radius-sm: 0.25rem;
+  --border-radius-md: 0.75rem;
+  --border-radius-lg: 1rem;
 }
-```
-
-## Backend Integration
-
-To connect the chat widget to your backend:
-
-1. Update the API endpoint in `src/services/api.ts`:
-```typescript
-const API_URL = 'YOUR_BACKEND_API_URL';
-```
-
-2. Customize the message format in the API service:
-```typescript
-export interface ChatMessage {
-  id: string;
-  text: string;
-  sender: 'user' | 'bot';
-  timestamp: Date;
-}
-```
-
-## Configuration Options
-
-You can modify the following constants in `ChatWidget.tsx`:
-
-```typescript
-// Inactivity timeout duration (in milliseconds)
-const INACTIVITY_TIMEOUT = 3 * 60 * 1000; // 3 minutes
-
-// Additional configuration options can be added here
 ```
 
 ## Browser Support
+- Modern browsers with CSS Grid support
+- Fallbacks for older browsers
+- Progressive enhancement approach
 
-The widget is compatible with:
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers
+## Future Enhancements
+- [ ] Add more Disney-inspired animations
+- [ ] Implement theme switching
+- [ ] Add custom emoji support
+- [ ] Enhance mobile interactions
+- [ ] Add more accessibility features
 
-## Contributing
+## Development
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### Prerequisites
+- Node.js
+- Modern web browser
+- Text editor with CSS support
+
+### Installation
+1. Clone the repository
+2. Install dependencies
+3. Start the development server
+
+### Contributing
+Contributions are welcome! Please read our contributing guidelines and submit pull requests.
 
 ## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+[Add your license here]
 
 ## Acknowledgments
-
-- Built with React and TypeScript
-- Uses Material-UI icons for the chat button
-- Implements modern React patterns and hooks
-- Follows accessibility best practices
+- Inspired by Disney's 70th Anniversary design language
+- Glass morphism effects inspired by modern UI trends
+- Special thanks to the Disney design team for inspiration
