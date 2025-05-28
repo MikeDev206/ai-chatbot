@@ -4,11 +4,12 @@ import { ChatMessage } from '../services/api';
 
 interface UseChatStateProps {
   inactivityTimeout: number;
+  initialMessage?: string;
 }
 
-export const useChatState = ({ inactivityTimeout }: UseChatStateProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMaximized, setIsMaximized] = useState(false);
+export const useChatState = ({ inactivityTimeout, initialMessage }: UseChatStateProps) => {
+  const [isOpen] = useState(true); // Always open in maximized mode
+  const [isMaximized, setIsMaximized] = useState(true); // Always maximized
   const [sessionActive, setSessionActive] = useState(false);
   const [lastActivity, setLastActivity] = useState<number>(Date.now());
   const [showTimeoutMessage, setShowTimeoutMessage] = useState(false);
@@ -20,24 +21,26 @@ export const useChatState = ({ inactivityTimeout }: UseChatStateProps) => {
     setShowTimeoutMessage(false);
   }, []);
 
-  const toggleChat = useCallback(() => {
-    if (!isOpen && !sessionActive) {
+  // Initialize the chat session with greeting
+  const initializeSession = useCallback(() => {
+    if (!sessionActive) {
       setSessionActive(true);
       handleActivity();
-      setGreeting(getTimeBasedGreeting());
+      const initialGreeting = initialMessage || getTimeBasedGreeting();
+      setGreeting(initialGreeting);
       setMessages([{
         id: 'greeting',
-        text: getTimeBasedGreeting(),
+        text: initialGreeting,
         sender: 'bot',
         timestamp: new Date()
       }]);
     }
-    setIsOpen((prev) => !prev);
-    // Reset maximized state when closing
-    if (isOpen) {
-      setIsMaximized(false);
-    }
-  }, [isOpen, sessionActive, handleActivity]);
+  }, [sessionActive, handleActivity, initialMessage]);
+
+  // Initialize session on component mount
+  useEffect(() => {
+    initializeSession();
+  }, [initializeSession]);
 
   const toggleMaximize = useCallback(() => {
     setIsMaximized((prev) => !prev);
@@ -46,8 +49,6 @@ export const useChatState = ({ inactivityTimeout }: UseChatStateProps) => {
 
   const resetSession = useCallback(() => {
     setSessionActive(false);
-    setIsOpen(false);
-    setIsMaximized(false);
     setShowTimeoutMessage(true);
     setGreeting('');
     setMessages([]);
@@ -82,8 +83,8 @@ export const useChatState = ({ inactivityTimeout }: UseChatStateProps) => {
     greeting,
     messages,
     handleActivity,
-    toggleChat,
     toggleMaximize,
-    setMessages
+    setMessages,
+    setGreeting
   };
 }; 

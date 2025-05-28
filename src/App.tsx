@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import ChatWidget from './components/ChatWidget';
+import ChatWidget from './components/chatwidget/ChatWidget';
 
 function App() {
   return (

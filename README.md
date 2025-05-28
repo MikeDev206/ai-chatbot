@@ -1,6 +1,6 @@
 # React Floating Chat Widget
 
-A modern, customizable floating chat widget built with React and TypeScript. This widget provides a seamless chat experience with session management and automatic timeout features.
+A modern, customizable floating chat widget built with React and TypeScript. This widget provides a seamless chat experience with session management, automatic timeout features, and cruise availability integration.
 
 ![Chat Widget Demo](demo.gif)
 
@@ -14,6 +14,7 @@ A modern, customizable floating chat widget built with React and TypeScript. Thi
 - ⌨️ Real-time typing indicators
 - 🎨 Customizable themes and styles
 - ♿ Accessibility-friendly with ARIA labels
+- 🚢 Cruise availability integration with fallback responses
 
 ## Installation
 
@@ -38,15 +39,12 @@ REACT_APP_API_KEY=your_api_key_here
 REACT_APP_CHAT_TITLE="Chat with us"
 REACT_APP_INITIAL_GREETING="Hello! How can I help you today?"
 REACT_APP_INACTIVITY_TIMEOUT=180000
-
-# Optional Configurations
-REACT_APP_MAX_MESSAGE_LENGTH=500
-REACT_APP_TYPING_INDICATOR_TIMEOUT=2000
-REACT_APP_ENABLE_FILE_UPLOADS=false
-REACT_APP_MAX_FILE_SIZE=5242880
+REACT_APP_MAX_MESSAGE_LENGTH=1000
 ```
 
-4. Start the development server:
+4. Create an `assets` folder in the `public` directory and add your `availability-fallback.json` file for offline/error fallback responses.
+
+5. Start the development server:
 ```bash
 npm start
 ```
@@ -56,7 +54,7 @@ npm start
 ### Basic Implementation
 
 ```tsx
-import ChatWidget from './components/ChatWidget';
+import ChatWidget from './components/chatwidget/ChatWidget';
 
 function App() {
   return (
@@ -73,7 +71,48 @@ The widget consists of three main components:
 
 1. `ChatWidget`: The main container component that handles the widget's state and session management
 2. `ChatInterface`: The chat interface component that handles messages and user input
-3. `API Service`: Handles communication with the backend
+3. `API Service`: Handles communication with the cruise availability backend
+
+## Cruise Availability Integration
+
+The widget integrates with a cruise availability API:
+
+### API Endpoint
+
+The chat widget communicates with the cruise availability endpoint:
+```typescript
+${API_URL}/cruise-availability-details/genai/availability
+```
+
+### Authentication
+
+API requests include:
+- Bearer token authentication (when API_KEY is provided)
+- CORS headers
+- JSON content type
+
+### Error Handling
+
+The widget implements a robust error handling system:
+1. Attempts to call the cruise availability API
+2. On failure, falls back to local availability data
+3. Uses a fallback JSON response from `public/assets/availability-fallback.json`
+
+### Message Format
+
+```typescript
+export interface ChatMessage {
+  id: string;
+  text: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
+}
+
+export interface ChatResponse {
+  message: ChatMessage;
+  error?: string;
+}
+```
 
 ## Session Management
 

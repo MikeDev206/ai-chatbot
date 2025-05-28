@@ -1,33 +1,25 @@
 import React, { useRef, useEffect } from 'react';
 import './ChatInterface.css';
-import { ChatMessage } from '../services/api';
+import { ChatMessage } from '../../services/api';
 import PersonIcon from '@mui/icons-material/Person';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
-import { useMessageHandler } from '../hooks/useMessageHandler';
+import { useMessageHandler } from '../../hooks/useMessageHandler';
 
 interface ChatInterfaceProps {
   onActivity?: () => void;
   maxMessageLength?: number;
   initialGreeting?: string;
+  messages: ChatMessage[];
+  setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
 }
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ 
   onActivity = () => {},
   maxMessageLength = 1000,
-  initialGreeting
+  initialGreeting,
+  messages,
+  setMessages
 }) => {
-  const [messages, setMessages] = React.useState<ChatMessage[]>(() => {
-    if (initialGreeting) {
-      return [{
-        id: 'greeting',
-        text: initialGreeting,
-        sender: 'bot',
-        timestamp: new Date()
-      }];
-    }
-    return [];
-  });
-
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { inputMessage, isLoading, handleInputChange, handleSendMessage } = useMessageHandler({
@@ -60,6 +52,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Set initial greeting if provided
+  useEffect(() => {
+    if (initialGreeting && messages.length === 0) {
+      setMessages([{
+        id: 'greeting',
+        text: initialGreeting,
+        sender: 'bot',
+        timestamp: new Date()
+      }]);
+    }
+  }, [initialGreeting, messages.length, setMessages]);
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -108,23 +112,25 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         <div ref={messagesEndRef} />
       </div>
       
-      <form onSubmit={handleSendMessage} className="chat-input-form">
-        <textarea
-          ref={textareaRef}
-          value={inputMessage}
-          onChange={handleInputChange}
-          onKeyPress={handleKeyPress}
-          placeholder="Type your message..."
-          className="chat-input"
-          disabled={isLoading}
-          maxLength={maxMessageLength}
-          rows={1}
-        />
-        {inputMessage.length > 0 && (
-          <div className="character-count">
-            {inputMessage.length}/{maxMessageLength}
-          </div>
-        )}
+      <form className="chat-input-form" onSubmit={handleSendMessage}>
+        <div className="chat-input-wrapper">
+          <textarea
+            ref={textareaRef}
+            value={inputMessage}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
+            placeholder="Type your message..."
+            className="chat-input"
+            disabled={isLoading}
+            maxLength={maxMessageLength}
+            rows={1}
+          />
+          {inputMessage.length > 0 && (
+            <div className="character-count">
+              {inputMessage.length}/{maxMessageLength}
+            </div>
+          )}
+        </div>
         <button type="submit" className="send-button" disabled={isLoading || !inputMessage.trim()}>
           {isLoading ? 'Sending...' : 'Send'}
         </button>
