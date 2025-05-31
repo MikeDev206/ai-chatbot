@@ -11,3 +11,59 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Font Face Declaration */
+@font-face {
+  font-family: 'Waltograph';
+  src: url('./assets/fonts/waltograph42.otf') format('opentype'),
+       url('./assets/fonts/waltographUI.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Apply Waltograph to capital letters */
+[class] {
+  font-family: inherit;
+}
+
+[class] > [A-Z] {
+  font-family: 'Waltograph', cursive !important;
+}
+
+h1, h2, h3, h4, h5, h6, p, div, span, button, input, textarea {
+  font-family: inherit;
+}
+
+h1:matches([A-Z]), h2:matches([A-Z]), h3:matches([A-Z]), 
+h4:matches([A-Z]), h5:matches([A-Z]), h6:matches([A-Z]),
+p:matches([A-Z]), div:matches([A-Z]), span:matches([A-Z]),
+button:matches([A-Z]), input:matches([A-Z]), textarea:matches([A-Z]) {
+  font-family: 'Waltograph', cursive !important;
+}
+
+/* Capital Letters Styling */
+h1 strong, h2 strong, h3 strong, h4 strong, h5 strong, h6 strong,
+p strong, span strong, div strong, button strong, input strong, textarea strong {
+  font-family: inherit;
+}
+
+/* Apply Waltograph to capital letters */
+*:not(script):not(style) {
+  text-transform: none;
+}
+
+/* This will catch all capital letters */
+*:not(script):not(style)::first-letter {
+  text-transform: none;
+}
+
+/* Direct capital letters targeting */
+span:has(> [A-Z]),
+p:has(> [A-Z]),
+div:has(> [A-Z]),
+button:has(> [A-Z]),
+input:has(> [A-Z]),
+textarea:has(> [A-Z]) {
+  font-family: inherit;
+}

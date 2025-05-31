@@ -1,25 +1,41 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { getTimeBasedGreeting } from '../utils/greetings';
 import { ChatMessage } from '../services/api';
+import debounce from 'lodash/debounce';
 
 interface UseChatStateProps {
   inactivityTimeout: number;
   initialMessage?: string;
+  skipInitialGreeting?: boolean;
 }
 
-export const useChatState = ({ inactivityTimeout, initialMessage }: UseChatStateProps) => {
+export const useChatState = ({
+  inactivityTimeout,
+  initialMessage,
+  skipInitialGreeting = false
+}: UseChatStateProps) => {
   const [isOpen] = useState(true); // Always open in maximized mode
   const [isMaximized, setIsMaximized] = useState(true); // Always maximized
   const [sessionActive, setSessionActive] = useState(false);
-  const [lastActivity, setLastActivity] = useState<number>(Date.now());
   const [showTimeoutMessage, setShowTimeoutMessage] = useState(false);
   const [greeting, setGreeting] = useState<string>('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const lastActivityRef = useRef<number>(Date.now());
+
+  // Debounced activity handler to prevent excessive state updates
+  const debouncedSetActivity = useCallback(
+    debounce(() => {
+      lastActivityRef.current = Date.now();
+      setShowTimeoutMessage(false);
+    }, 1000),
+    []
+  );
 
   const handleActivity = useCallback(() => {
-    setLastActivity(Date.now());
-    setShowTimeoutMessage(false);
-  }, []);
+    debouncedSetActivity();
+  }, [debouncedSetActivity]);
 
   // Initialize the chat session with greeting
   const initializeSession = useCallback(() => {
@@ -28,14 +44,18 @@ export const useChatState = ({ inactivityTimeout, initialMessage }: UseChatState
       handleActivity();
       const initialGreeting = initialMessage || getTimeBasedGreeting();
       setGreeting(initialGreeting);
-      setMessages([{
-        id: 'greeting',
-        text: initialGreeting,
-        sender: 'bot',
-        timestamp: new Date()
-      }]);
+      
+      // Only add greeting message if not skipped
+      if (!skipInitialGreeting) {
+        setMessages([{
+          id: 'greeting',
+          text: initialGreeting,
+          sender: 'bot',
+          timestamp: new Date()
+        }]);
+      }
     }
-  }, [sessionActive, handleActivity, initialMessage]);
+  }, [sessionActive, handleActivity, initialMessage, skipInitialGreeting]);
 
   // Initialize session on component mount
   useEffect(() => {
@@ -54,26 +74,27 @@ export const useChatState = ({ inactivityTimeout, initialMessage }: UseChatState
     setMessages([]);
   }, []);
 
+  // Efficient inactivity check
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    const checkInactivity = () => {
+      const timeSinceLastActivity = Date.now() - lastActivityRef.current;
+      
+      if (timeSinceLastActivity >= inactivityTimeout) {
+        resetSession();
+        console.log('Chat session closed due to inactivity:', new Date().toISOString());
+      }
+    };
 
     if (sessionActive) {
-      timeoutId = setTimeout(() => {
-        const timeSinceLastActivity = Date.now() - lastActivity;
-        
-        if (timeSinceLastActivity >= inactivityTimeout) {
-          resetSession();
-          console.log('Chat session closed due to inactivity:', new Date().toISOString());
-        }
-      }, inactivityTimeout);
+      timeoutRef.current = setInterval(checkInactivity, Math.min(inactivityTimeout, 60000));
     }
 
     return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId);
+      if (timeoutRef.current) {
+        clearInterval(timeoutRef.current);
       }
     };
-  }, [lastActivity, sessionActive, inactivityTimeout, resetSession]);
+  }, [sessionActive, inactivityTimeout, resetSession]);
 
   return {
     isOpen,

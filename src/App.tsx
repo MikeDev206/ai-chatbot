@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import './App.css';
-import ChatWidget from './components/chatwidget/ChatWidget';
+// Import font files
+import './assets/fonts/waltograph42.otf';
+import './assets/fonts/waltographUI.ttf';
+
+// Lazy load the ChatWidget
+const ChatWidget = React.lazy(() => import('./components/chatwidget/ChatWidget'));
 
 function App() {
   return (
     <div className="App">
-      <ChatWidget />
+      <Suspense fallback={<div className="loading-fallback">Loading...</div>}>
+        <ChatWidget />
+      </Suspense>
     </div>
   );
 }

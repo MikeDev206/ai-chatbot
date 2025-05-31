@@ -1,10 +1,12 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import './ChatInterface.css';
 import { ChatMessage } from '../../services/api';
-import PersonIcon from '@mui/icons-material/Person';
-import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { useMessageHandler } from '../../hooks/useMessageHandler';
-import GooeyLoader from './GooeyLoader';
+import CapitalLetters from '../CapitalLetters';
+import WindowedMessageList from './WindowedMessageList';
+
+const MAX_MESSAGES = 100; // Maximum number of messages to keep in memory
 
 interface ChatInterfaceProps {
   onActivity?: () => void;
@@ -21,40 +23,47 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   messages,
   setMessages
 }) => {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { inputMessage, isLoading, handleInputChange, handleSendMessage } = useMessageHandler({
+  
+  const { 
+    inputMessage, 
+    isLoading, 
+    handleInputChange, 
+    handleSendMessage 
+  } = useMessageHandler({
     onActivity,
     maxMessageLength,
-    setMessages
+    setMessages: useCallback((messagesOrUpdater: ChatMessage[] | ((prev: ChatMessage[]) => ChatMessage[])) => {
+      setMessages((prev) => {
+        const newMessages = typeof messagesOrUpdater === 'function' 
+          ? messagesOrUpdater(prev)
+          : messagesOrUpdater;
+        
+        // Limit the number of messages
+        if (newMessages.length > MAX_MESSAGES) {
+          return newMessages.slice(-MAX_MESSAGES);
+        }
+        return newMessages;
+      });
+    }, [setMessages])
   });
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  // Auto-resize textarea
-  useEffect(() => {
+  const adjustTextareaHeight = useCallback(() => {
     const textarea = textareaRef.current;
-    if (textarea) {
-      // Reset to auto to get the correct scrollHeight
-      textarea.style.height = 'auto';
-      
-      // Calculate new height while respecting min/max constraints
-      const newHeight = Math.max(
-        44, // min height
-        Math.min(textarea.scrollHeight, 120) // max height
-      );
-      
-      textarea.style.height = `${newHeight}px`;
-    }
-  }, [inputMessage]);
+    if (!textarea) return;
+
+    textarea.style.height = 'auto';
+    const newHeight = Math.max(
+      44, // min height
+      Math.min(textarea.scrollHeight, 120) // max height
+    );
+    textarea.style.height = `${newHeight}px`;
+  }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    adjustTextareaHeight();
+  }, [inputMessage, adjustTextareaHeight]);
 
-  // Set initial greeting if provided
   useEffect(() => {
     if (initialGreeting && messages.length === 0) {
       setMessages([{
@@ -75,39 +84,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
     }
   };
 
+  const handleClearConversation = () => {
+    setMessages([]);
+  };
+
+  const shouldShowClearButton = messages.length >= 2;
+
   return (
     <div className="chat-container" onClick={onActivity}>
-      <div className="chat-messages">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`message ${message.sender === 'user' ? 'user-message' : 'bot-message'}`}
-          >
-            <div className={`message-avatar ${message.sender === 'user' ? 'user-avatar' : 'bot-avatar'}`}>
-              {message.sender === 'user' ? <PersonIcon /> : <SentimentSatisfiedAltIcon />}
-            </div>
-            <div className="message-bubble">
-              <div className="message-content">{message.text}</div>
-              <div className="message-timestamp">
-                {message.timestamp.toLocaleTimeString()}
-              </div>
-            </div>
-          </div>
-        ))}
-        {isLoading && (
-          <div className="message bot-message">
-            <div className="message-avatar bot-avatar">
-              <SentimentSatisfiedAltIcon />
-            </div>
-            <div className="message-bubble">
-              <div className="message-content">
-                <GooeyLoader />
-              </div>
-            </div>
-          </div>
-        )}
-        <div ref={messagesEndRef} />
-      </div>
+      <WindowedMessageList 
+        messages={messages}
+        isLoading={isLoading}
+      />
       
       <form className="chat-input-form" onSubmit={handleSendMessage}>
         <div className="chat-input-wrapper">
@@ -124,13 +112,29 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           />
           {inputMessage.length > 0 && (
             <div className="character-count">
-              {inputMessage.length}/{maxMessageLength}
+              <CapitalLetters text={`${inputMessage.length}/${maxMessageLength}`} />
             </div>
           )}
         </div>
-        <button type="submit" className="send-button" disabled={isLoading || !inputMessage.trim()}>
-          {isLoading ? 'Sending...' : 'Send'}
-        </button>
+        <div className="chat-buttons">
+          {shouldShowClearButton && (
+            <button 
+              type="button" 
+              className="clear-button" 
+              onClick={handleClearConversation}
+              title="Clear conversation"
+            >
+              <DeleteOutlineIcon />
+            </button>
+          )}
+          <button 
+            type="submit" 
+            className="send-button" 
+            disabled={isLoading || !inputMessage.trim()}
+          >
+            <CapitalLetters text={isLoading ? 'Sending...' : 'Send'} />
+          </button>
+        </div>
       </form>
     </div>
   );

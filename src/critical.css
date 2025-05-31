@@ -1,0 +1,34 @@
+/* Critical CSS for initial render */
+:root {
+  --disney-deep-blue: #1e3a8a;
+  --disney-bright-blue: #4680E3;
+  --disney-gold: #F4C542;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--disney-deep-blue);
+  overflow: hidden;
+}
+
+.loading-fallback {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: white;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--disney-deep-blue);
+}
+
+/* Basic chat container structure */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 50%;
+  margin: 0 auto;
+  height: 100vh;
+  overflow: hidden;
+} 

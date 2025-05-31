@@ -1,12 +1,14 @@
+/* Widget-related styles (preserved for future use)
 .chat-widget-container {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 1000;
 }
+*/
 
-/* Backdrop for maximized state */
-.backdrop {
+/* Main app background */
+/* backdrop {
   position: fixed;
   top: 0;
   left: 0;
@@ -14,11 +16,11 @@
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 999;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
+  opacity: 1;
+  visibility: visible;
+} */
 
+/* Widget-related styles (preserved for future use)
 .backdrop.visible {
   opacity: 1;
   visibility: visible;
@@ -52,40 +54,76 @@
 .chat-toggle-button.open:hover {
   background-color: #ec407a;
 }
+*/
 
+/* Main chat container */
 .chat-popup {
   position: fixed;
-  bottom: 100px;
-  right: 20px;
-  width: min(350px, calc(100vw - 40px));
-  height: min(500px, calc(100vh - 120px));
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: transparent;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   z-index: 1000;
 }
 
-.chat-popup.maximized {
-  width: min(80vw, 1000px);
-  height: min(80vh, 800px);
-  max-width: calc(100vw - 40px);
-  max-height: calc(100vh - 40px);
-  bottom: 50%;
-  right: 50%;
-  transform: translate(50%, 50%);
-  background-color: #ffffff;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+/* Welcome message styling */
+.welcome-container {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.chat-popup:not(.has-messages) .welcome-container {
+  opacity: 1;
+  visibility: visible;
+}
+
+.welcome-title {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 2rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.welcome-subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.25rem;
+  font-weight: 400;
+}
+
+/* Center the input when no messages */
+.chat-popup:not(.has-messages) .chat-input-form {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(90%, 50%);
+  padding: 1rem;
+}
+
+/* Regular position when there are messages */
+.chat-popup.has-messages .chat-input-form {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90%, 50%);
+  padding: 1rem;
+  background: transparent;
 }
 
 .chat-popup-header {
   padding: 12px 16px;
-  background-color: #f8f9fa;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  border-bottom: 1px solid #e9ecef;
+  background-color: transparent;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -94,7 +132,7 @@
 
 .chat-popup-header h3 {
   margin: 0;
-  color: #2c3e50;
+  color: #ffffff;
   font-size: 1.1rem;
   white-space: nowrap;
   overflow: hidden;
@@ -111,7 +149,7 @@
 .header-button {
   background: none;
   border: none;
-  color: #7f8c8d;
+  color: #ffffff;
   cursor: pointer;
   width: 32px;
   height: 32px;
@@ -124,10 +162,11 @@
 }
 
 .header-button:hover {
-  color: #34495e;
-  background-color: rgba(236, 240, 241, 0.8);
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Remove widget-specific styles
 .maximize-button {
   font-size: 1.2rem;
 }
@@ -149,44 +188,103 @@
   max-width: calc(100vw - 40px);
   word-wrap: break-word;
 }
+*/
 
 /* Mobile styles */
 @media (max-width: 480px) {
-  .chat-popup.maximized {
+  .chat-popup {
     width: 100%;
     height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    bottom: 0;
-    right: 0;
-    transform: none;
-    border-radius: 0;
   }
 
   .chat-popup-header {
-    border-radius: 0;
-  }
-
-  .timeout-message {
-    bottom: 80px;
-    right: 10px;
-    left: 10px;
-    text-align: center;
+    padding: 8px 12px;
   }
 }
 
 /* High contrast mode */
 @media (prefers-contrast: high) {
-  .chat-popup {
-    box-shadow: 0 0 0 2px #000;
+  .backdrop {
+    background-color: rgba(0, 0, 0, 0.8);
   }
 }
 
 /* Print styles */
 @media print {
-  .chat-widget-container,
   .chat-popup,
   .backdrop {
     display: none;
   }
+}
+
+.chat-input-wrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  margin-right: 5px;
+}
+
+.send-button {
+  height: 2.75rem;
+  padding: 0 1.5rem;
+  background: linear-gradient(135deg, rgba(64, 89, 159, 0.9), rgba(36, 0, 77, 0.9));
+  color: #fff;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+  letter-spacing: 0.0188em;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.send-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(64, 89, 159, 1), rgba(36, 0, 77, 1));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(64, 89, 159, 0.3);
+}
+
+.send-button:disabled {
+  background: linear-gradient(135deg, rgba(64, 89, 159, 0.5), rgba(36, 0, 77, 0.5));
+  border-color: rgba(255, 255, 255, 0.05);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.chat-widget {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 400px;
+  height: 600px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.chat-widget-header {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  /* backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px); */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 } 
